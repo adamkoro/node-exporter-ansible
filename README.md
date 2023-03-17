@@ -34,7 +34,7 @@ cp inventory/group_vars/all.yml.example inventory/group_vars/all.yml
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `ansible_user` | `root` | Username which Ansible will use |
+| `ansible_user` | `root` | Username which Ansible will use to connect via SSH |
 | `node_exporter_version` | `1.5.0` | Version of the Node Exporter |
 | `download_url` | `https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}` | URL to download Node Exporter |
 
