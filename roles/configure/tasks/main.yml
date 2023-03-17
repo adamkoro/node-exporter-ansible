@@ -4,6 +4,7 @@
     name: node_exporter
     shell: /usr/sbin/nologin
     createhome: false
+    system: true
 
 # Create node_exporter group
 - name: Create node_exporter group
