@@ -30,8 +30,6 @@ Copy `inventory/group_vars/all.yml.example` to `inventory/group_vars/all.yml` an
 cp inventory/group_vars/all.yml.example inventory/group_vars/all.yml
 ```
 
-
-
 #### all.yml variables
 
 | Variable | Default | Description |
