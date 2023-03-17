@@ -1,0 +1,9 @@
+- name: Deploy Prometheus Node Exporter
+  hosts: all
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  roles:
+    - role: download
+    - role: configure

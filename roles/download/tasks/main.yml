@@ -1,0 +1,19 @@
+# Download Node Exporter when architecture is x86_64
+- name: Download Node Exporter for x86_64
+  ansible.builtin.get_url:
+    url: "https://{{ download_url }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+    owner: root
+    group: root
+    mode: '0755'
+  when: ansible_architecture == "x86_64"
+
+# Download Node Exporter when architecture is arm64
+- name: Download Node Exporter for arm64
+  ansible.builtin.get_url:
+    url: "https://{{ download_url }}/node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz"
+    dest: /tmp/node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz
+    owner: root
+    group: root
+    mode: '0755'
+  when: ansible_architecture == "aarch64"

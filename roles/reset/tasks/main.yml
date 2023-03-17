@@ -1,0 +1,58 @@
+# Stop Node Exporter service
+- name: Stop Node Exporter
+  ansible.builtin.systemd:
+    name: node_exporter.service
+    state: stopped
+
+# Stop PNode Exporter socket
+- name: Stop Node Exporter socket
+  ansible.builtin.systemd:
+    name: node_exporter.socket
+    state: stopped
+
+# Remove Node Exporter service
+- name: Remove Node Exporter service
+  ansible.builtin.file:
+    path: /etc/systemd/system/node_exporter.service
+    state: absent
+
+# Remove Node Exporter socket
+- name: Remove Node Exporter socket
+  ansible.builtin.file:
+    path: /etc/systemd/system/node_exporter.socket
+    state: absent
+
+# Remove Node Exporter binary
+- name: Remove Node Exporter binary
+  ansible.builtin.file:
+    path: /usr/local/bin/node_exporter
+    state: absent
+
+# Remove Node Exporter directory
+- name: Remove Node Exporter directory
+  ansible.builtin.file:
+    path: /var/lib/node_exporter
+    state: absent
+
+# Remove Node Exporter configuration file
+- name: Remove Node Exporter configuration file
+  ansible.builtin.file:
+    path: /etc/sysconfig/node_exporter
+    state: absent
+
+# Remove Node Exporter user
+- name: Remove Node Exporter user
+  ansible.builtin.user:
+    name: node_exporter
+    state: absent
+
+# Remove Node Exporter group
+- name: Remove Node Exporter group
+  ansible.builtin.group:
+    name: node_exporter
+    state: absent
+
+# Reload systemd
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

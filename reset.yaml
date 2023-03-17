@@ -1,0 +1,8 @@
+- name: Delete Prometheus Node Exporter
+  hosts: all
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  roles:
+    - role: reset

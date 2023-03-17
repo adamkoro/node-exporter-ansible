@@ -1,0 +1,3 @@
+ansible_user: adamkoro
+node_exporter_version: 1.5.0
+download_url: fileserver.adamkoro.local/node_exporter/v{{ node_exporter_version }}

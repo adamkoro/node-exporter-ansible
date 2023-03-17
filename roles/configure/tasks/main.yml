@@ -1,0 +1,98 @@
+# Create node_exporter user
+- name: Create node_exporter user
+  ansible.builtin.user:
+    name: node_exporter
+    shell: /usr/sbin/nologin
+    createhome: false
+
+# Create node_exporter group
+- name: Create node_exporter group
+  ansible.builtin.group:
+    name: node_exporter
+    system: true
+
+# Run arm64.yml if ansible_architecture is arm64
+- name: Run arm64.yml if ansible_architecture is arm64
+  ansible.builtin.include_tasks:
+    file: arm64.yml
+    apply:
+      when: ansible_architecture == "aarch64"
+
+# Run amd64.yml if ansible_architecture is amd64
+- name: Run amd64.yml if ansible_architecture is amd64
+  ansible.builtin.include_tasks:
+    file: amd64.yml
+    apply:
+      when: ansible_architecture == "x86_64"
+
+# Create node_exporter log directory
+- name: Create node_exporter log directory
+  ansible.builtin.file:
+    path: /var/log/node_exporter
+    state: directory
+    owner: node_exporter
+    group: node_exporter
+    mode: '0755'
+
+# Create node_exporter data directory
+- name: Create node_exporter data directory
+  ansible.builtin.file:
+    path: /var/lib/node_exporter
+    state: directory
+    owner: node_exporter
+    group: node_exporter
+    mode: '0755'
+
+# Create node_exporter text-collectors directory
+- name: Create node_exporter text-collectors directory
+  ansible.builtin.file:
+    path: /var/lib/node_exporter/text-collectors
+    state: directory
+    owner: node_exporter
+    group: node_exporter
+    mode: '0755'
+
+# Create node_exporter service file
+- name: Create node exporter service file
+  ansible.builtin.template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+
+# Create node_exporter socket file
+- name: Create node exporter socket file
+  ansible.builtin.template:
+    src: node_exporter.socket.j2
+    dest: /etc/systemd/system/node_exporter.socket
+    owner: root
+    group: root
+    mode: '0644'
+
+# Create node_exporter config file
+- name: Create node exporter config file
+  ansible.builtin.template:
+    src: node_exporter.sysconfig.j2
+    dest: /etc/sysconfig/node_exporter
+    owner: node_exporter
+    mode: '0644'
+
+# Reload systemd daemon
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+# Start node_exporter socket
+- name: Start node_exporter socket
+  ansible.builtin.systemd:
+    name: node_exporter.socket
+    state: started
+    enabled: true
+
+# Start node_exporter service
+- name: Start node_exporter service
+  ansible.builtin.systemd:
+    name: node_exporter
+    state: started
+    enabled: true
