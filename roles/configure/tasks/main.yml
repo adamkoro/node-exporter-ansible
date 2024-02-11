@@ -47,7 +47,7 @@
 # Create node_exporter text-collectors directory
 - name: Create node_exporter text-collectors directory
   ansible.builtin.file:
-    path: /var/lib/node_exporter/text-collectors
+    path: /var/lib/node_exporter/textfile_collector
     state: directory
     owner: node_exporter
     group: node_exporter
@@ -61,6 +61,7 @@
     owner: root
     group: root
     mode: '0644'
+  register: node_exporter_service_config
 
 # Create node_exporter socket file
 - name: Create node exporter socket file
@@ -70,6 +71,7 @@
     owner: root
     group: root
     mode: '0644'
+  register: node_exporter_socket_config
 
 # Create node_exporter config file
 - name: Create node exporter config file
@@ -78,6 +80,68 @@
     dest: /etc/node_exporter
     owner: node_exporter
     mode: '0644'
+  register: node_exporter_config
+
+# Install smart_metrics requirements
+- name: Install smart_metrics requirements
+  ansible.builtin.apt:
+    name: smartmontools
+    state: present
+    install_recommends: true
+  when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Debian" and smart_metrics_enabled is true
+
+# Create smart_metrics cron
+- name: Create smart_metrics cron
+  ansible.builtin.copy:
+    content: |
+      #Ansible: smart_metrics
+      */1 * * * * node_exporter /usr/local/bin/smart_metrics > /var/lib/node_exporter/textfile_collector/smart_metrics.prom
+    dest: /etc/cron.d/smart_metrics
+    mode: '0644'
+  when: smart_metrics_enabled is true
+
+# Install nvme_metrics requirements
+- name: Install nvme_metrics requirements
+  ansible.builtin.apt:
+    name:
+      - nvme-cli
+      - jq
+    state: present
+    install_recommends: true
+  when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Debian" and nvme_metrics_enabled is true
+
+# Create nvme_metrics cron
+- name: Create nvme_metrics cron
+  ansible.builtin.copy:
+    content: |
+      #Ansible: nvme_metrics
+      */1 * * * * node_exporter /usr/local/bin/nvme_metrics > /var/lib/node_exporter/textfile_collector/nvme_metrics.prom
+    dest: /etc/cron.d/nvme_metrics
+    mode: '0644'
+  when: nvme_metrics_enabled is true
+
+# Create lvm_metrics cron
+- name: Create lvm_metrics cron
+  ansible.builtin.copy:
+    content: |
+      #Ansible: lvm_metrics
+      */1 * * * * node_exporter /usr/local/bin/lvm_metrics -g > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm.prom
+      */1 * * * * node_exporter /usr/local/bin/lvm_metrics -p > /var/lib/node_exporter/textfile_collector/lvm_metrics_physical.prom
+      */1 * * * * node_exporter /usr/local/bin/lvm_metrics -s > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm_snapshot.prom
+      */1 * * * * node_exporter /usr/local/bin/lvm_metrics -t > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm_thin.prom
+    dest: /etc/cron.d/lvm_metrics
+    mode: '0644'
+  when: lvm_metrics_enabled is true
+
+# Create zfs_metrics cron
+- name: Create zfs_metrics cron
+  ansible.builtin.copy:
+    content: |
+      #Ansible: zfs_metrics
+      */1 * * * * node_exporter /usr/local/bin/zfs_metrics > /var/lib/node_exporter/textfile_collector/zfs_metrics.prom
+    dest: /etc/cron.d/zfs_metrics
+    mode: '0644'
+  when: zfs_metrics_enabled is true
 
 # Reload systemd daemon
 - name: Reload systemd daemon
@@ -90,6 +154,15 @@
     name: node_exporter.socket
     state: started
     enabled: true
+  register: node_exporter_socket_start
+
+# Restart node_exporter socket
+- name: Restart node_exporter socket
+  ansible.builtin.systemd:
+    name: node_exporter.socket
+    state: restarted
+    enabled: true
+  when: node_exporter_socket_start is not changed and node_exporter_socket_config is changed
 
 # Start node_exporter service
 - name: Start node_exporter service
@@ -97,3 +170,12 @@
     name: node_exporter
     state: started
     enabled: true
+  register: node_exporter_service_start
+
+# Restart node_exporter service
+- name: Restart node_exporter service
+  ansible.builtin.systemd:
+    name: node_exporter.service
+    state: restarted
+    enabled: true
+  when: node_exporter_service_start is not changed and node_exporter_service_config is changed or node_exporter_config is changed

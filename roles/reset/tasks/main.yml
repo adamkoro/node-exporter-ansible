@@ -4,7 +4,7 @@
     name: node_exporter.service
     state: stopped
 
-# Stop PNode Exporter socket
+# Stop Node Exporter socket
 - name: Stop Node Exporter socket
   ansible.builtin.systemd:
     name: node_exporter.socket
@@ -37,7 +37,31 @@
 # Remove Node Exporter configuration file
 - name: Remove Node Exporter configuration file
   ansible.builtin.file:
-    path: /etc/sysconfig/node_exporter
+    path: /etc/node_exporter
+    state: absent
+
+# Remove smart_metrics cron
+- name: Remove smart_metrics cron
+  ansible.builtin.file:
+    path: /etc/cron.d/smart_metrics
+    state: absent
+
+# Remove nvme_metrics cron
+- name: Remove nvme_metrics cron
+  ansible.builtin.file:
+    path: /etc/cron.d/nvme_metrics
+    state: absent
+
+# Remove lvm_metrics cron
+- name: Remove lvm_metrics cron
+  ansible.builtin.file:
+    path: /etc/cron.d/lvm_metrics
+    state: absent
+
+# Remove zfs_metrics cron
+- name: Remove zfs_metrics cron
+  ansible.builtin.file:
+    path: /etc/cron.d/zfs_metrics
     state: absent
 
 # Remove Node Exporter user
