@@ -74,8 +74,8 @@
 # Create node_exporter config file
 - name: Create node exporter config file
   ansible.builtin.template:
-    src: node_exporter.sysconfig.j2
-    dest: /etc/sysconfig/node_exporter
+    src: node_exporter.config.j2
+    dest: /etc/node_exporter
     owner: node_exporter
     mode: '0644'
 
