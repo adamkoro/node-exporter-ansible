@@ -4,7 +4,7 @@ Requires=node_exporter.socket
 
 [Service]
 User=node_exporter
-EnvironmentFile=/etc/sysconfig/node_exporter
+EnvironmentFile=/etc/node_exporter
 ExecStart=/usr/local/bin/node_exporter --web.systemd-socket $OPTIONS
 
 [Install]
