@@ -95,7 +95,7 @@
   ansible.builtin.copy:
     content: |
       #Ansible: smart_metrics
-      */1 * * * * node_exporter /usr/local/bin/smart_metrics > /var/lib/node_exporter/textfile_collector/smart_metrics.prom
+      */1 * * * * root /usr/local/bin/smart_metrics > /var/lib/node_exporter/textfile_collector/smart_metrics.prom
     dest: /etc/cron.d/smart_metrics
     mode: '0644'
   when: smart_metrics_enabled is true
@@ -115,7 +115,7 @@
   ansible.builtin.copy:
     content: |
       #Ansible: nvme_metrics
-      */1 * * * * node_exporter /usr/local/bin/nvme_metrics > /var/lib/node_exporter/textfile_collector/nvme_metrics.prom
+      */1 * * * * root /usr/local/bin/nvme_metrics > /var/lib/node_exporter/textfile_collector/nvme_metrics.prom
     dest: /etc/cron.d/nvme_metrics
     mode: '0644'
   when: nvme_metrics_enabled is true
@@ -125,10 +125,10 @@
   ansible.builtin.copy:
     content: |
       #Ansible: lvm_metrics
-      */1 * * * * node_exporter /usr/local/bin/lvm_metrics -g > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm.prom
-      */1 * * * * node_exporter /usr/local/bin/lvm_metrics -p > /var/lib/node_exporter/textfile_collector/lvm_metrics_physical.prom
-      */1 * * * * node_exporter /usr/local/bin/lvm_metrics -s > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm_snapshot.prom
-      */1 * * * * node_exporter /usr/local/bin/lvm_metrics -t > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm_thin.prom
+      */1 * * * * root /usr/local/bin/lvm_metrics -g > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm.prom
+      */1 * * * * root /usr/local/bin/lvm_metrics -p > /var/lib/node_exporter/textfile_collector/lvm_metrics_physical.prom
+      */1 * * * * root /usr/local/bin/lvm_metrics -s > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm_snapshot.prom
+      */1 * * * * root /usr/local/bin/lvm_metrics -t > /var/lib/node_exporter/textfile_collector/lvm_metrics_lvm_thin.prom
     dest: /etc/cron.d/lvm_metrics
     mode: '0644'
   when: lvm_metrics_enabled is true
@@ -138,7 +138,7 @@
   ansible.builtin.copy:
     content: |
       #Ansible: zfs_metrics
-      */1 * * * * node_exporter /usr/local/bin/zfs_metrics > /var/lib/node_exporter/textfile_collector/zfs_metrics.prom
+      */1 * * * * root /usr/local/bin/zfs_metrics > /var/lib/node_exporter/textfile_collector/zfs_metrics.prom
     dest: /etc/cron.d/zfs_metrics
     mode: '0644'
   when: zfs_metrics_enabled is true
