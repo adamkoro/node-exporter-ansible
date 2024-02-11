@@ -2,7 +2,7 @@
   hosts: all
   gather_facts: true
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   become_user: root
   roles:
     - role: download
