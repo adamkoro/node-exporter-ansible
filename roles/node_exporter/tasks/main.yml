@@ -1,3 +1,54 @@
+# Download Node Exporter when architecture is x86_64
+- name: Download Node Exporter for x86_64
+  ansible.builtin.get_url:
+    url: "{{ node_exporter_download_url }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+    owner: root
+    group: root
+    mode: '0755'
+  when: ansible_architecture == "x86_64"
+
+# Download Node Exporter when architecture is arm64
+- name: Download Node Exporter for arm64
+  ansible.builtin.get_url:
+    url: "{{ node_exporter_download_url }}/node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz"
+    dest: /tmp/node_exporter-{{ node_exporter_version }}.linux-arm64.tar.gz
+    owner: root
+    group: root
+    mode: '0755'
+  when: ansible_architecture == "aarch64"
+
+# Download NVME metics
+- name: Download NVME metrics sc for x86_64
+  ansible.builtin.get_url:
+    url: "{{ nvme_metrics_download_url }}"
+    dest: /usr/local/bin/nvme_metrics
+    owner: root
+    group: root
+    mode: '0755'
+  when: nvme_metrics_enabled is true
+
+# Download LVM metics
+- name: Download LVM metrics sc for x86_64
+  ansible.builtin.get_url:
+    url: "{{ lvm_metrics_download_url }}"
+    dest: /usr/local/bin/lvm_metrics
+    owner: root
+    group: root
+    mode: '0755'
+  when: lvm_metrics_enabled is true
+
+# Download ZFS metics
+- name: Download ZFS metrics sc for x86_64
+  ansible.builtin.get_url:
+    url: "{{ zfs_metrics_download_url }}"
+    dest: /usr/local/bin/zfs_metrics
+    owner: root
+    group: root
+    mode: '0755'
+  when: zfs_metrics_enabled is true
+
+
 # Create node_exporter user
 - name: Create node_exporter user
   ansible.builtin.user:
@@ -81,26 +132,6 @@
     owner: node_exporter
     mode: '0644'
   register: node_exporter_config
-
-# Install smart_metrics requirements
-- name: Install smart_metrics requirements
-  ansible.builtin.apt:
-    name: 
-      - smartmontools
-      - moreutils
-    state: present
-    install_recommends: true
-  when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Debian" and smart_metrics_enabled is true
-
-# Create smart_metrics cron
-- name: Create smart_metrics cron
-  ansible.builtin.copy:
-    content: |
-      #Ansible: smart_metrics
-      */1 * * * * root /usr/local/bin/smart_metrics | sponge /var/lib/node_exporter/textfile_collector/smart_metrics.prom
-    dest: /etc/cron.d/smart_metrics
-    mode: '0644'
-  when: smart_metrics_enabled is true
 
 # Install nvme_metrics requirements
 - name: Install nvme_metrics requirements
