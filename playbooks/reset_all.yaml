@@ -5,4 +5,5 @@
   become_method: ansible.builtin.sudo
   become_user: root
   roles:
-    - role: reset
+    - role: reset/smartctl_exporter
+    - role: reset/node_exporter

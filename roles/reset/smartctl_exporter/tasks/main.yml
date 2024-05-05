@@ -1,0 +1,46 @@
+# Stop Smartctl Exporter service
+- name: Stop Smartctl Exporter
+  ansible.builtin.systemd:
+    name: smartctl_exporter.service
+    state: stopped
+
+# Stop Smartctl Exporter socket
+- name: Stop Smartctl Exporter socket
+  ansible.builtin.systemd:
+    name: smartctl_exporter.socket
+    state: stopped
+
+# Remove Smartctl Exporter service
+- name: Remove Smartctl Exporter service
+  ansible.builtin.file:
+    path: /etc/systemd/system/smartctl_exporter.service
+    state: absent
+
+# Remove Smartctl Exporter socket
+- name: Remove Smartctl Exporter socket
+  ansible.builtin.file:
+    path: /etc/systemd/system/smartctl_exporter.socket
+    state: absent
+
+# Remove Smartctl Exporter binary
+- name: Remove Smartctl Exporter binary
+  ansible.builtin.file:
+    path: /usr/local/bin/smartctl_exporter
+    state: absent
+
+# Remove Smartctl Exporter directory
+- name: Remove Smartctl Exporter directory
+  ansible.builtin.file:
+    path: /var/lib/smartctl_exporter
+    state: absent
+
+# Remove Smartctl Exporter configuration file
+- name: Remove Smartctl Exporter configuration file
+  ansible.builtin.file:
+    path: /etc/smartctl_exporter
+    state: absent
+
+# Reload systemd
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
