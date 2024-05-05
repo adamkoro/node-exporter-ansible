@@ -1,9 +1,8 @@
-- name: Deploy Prometheus Node Exporter
+- name: Deploy Node Exporter
   hosts: all
   gather_facts: true
   become: true
   become_method: ansible.builtin.sudo
   become_user: root
   roles:
-    - role: download
-    - role: configure
+    - role: node_exporter

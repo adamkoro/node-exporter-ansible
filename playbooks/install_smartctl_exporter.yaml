@@ -1,0 +1,8 @@
+- name: Deploy Smartctl Exporter
+  hosts: all
+  gather_facts: true
+  become: true
+  become_method: ansible.builtin.sudo
+  become_user: root
+  roles:
+    - role: smartctl_exporter
