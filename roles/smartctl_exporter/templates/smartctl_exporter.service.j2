@@ -1,0 +1,11 @@
+[Unit]
+Description=Node Exporter
+Requires=smartctl_exporter .socket
+
+[Service]
+User=root 
+EnvironmentFile=/etc/smartctl_exporter 
+ExecStart=/usr/local/bin/smartctl_exporter --web.systemd-socket $OPTIONS
+
+[Install]
+WantedBy=multi-user.target

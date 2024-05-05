@@ -1,0 +1,118 @@
+# Download Smartctl Exporter when architecture is x86_64
+- name: Download Smartctl Exporter for x86_64
+  ansible.builtin.get_url:
+    url: "{{ smartctl_exporter_download_url }}/smartctl_exporter-{{ smartctl_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/smartctl_exporter-{{ smartctl_exporter_version }}.linux-amd64.tar.gz
+    owner: root
+    group: root
+    mode: '0755'
+  when: ansible_architecture == "x86_64"
+
+# Download Smartctl Exporter when architecture is arm64
+- name: Download Smartctl Exporter for arm64
+  ansible.builtin.get_url:
+    url: "{{ smartctl_exporter_download_url }}/smartctl_exporter-{{ smartctl_exporter_version }}.linux-arm64.tar.gz"
+    dest: /tmp/smartctl_exporter-{{ smartctl_exporter_version }}.linux-arm64.tar.gz
+    owner: root
+    group: root
+    mode: '0755'
+  when: ansible_architecture == "aarch64"
+
+# Run arm64.yml if ansible_architecture is arm64
+- name: Run arm64.yml if ansible_architecture is arm64
+  ansible.builtin.include_tasks:
+    file: arm64.yml
+    apply:
+      when: ansible_architecture == "aarch64"
+
+# Run amd64.yml if ansible_architecture is amd64
+- name: Run amd64.yml if ansible_architecture is amd64
+  ansible.builtin.include_tasks:
+    file: amd64.yml
+    apply:
+      when: ansible_architecture == "x86_64"
+
+# Create smartctl_exporter log directory
+- name: Create smartctl_exporter log directory
+  ansible.builtin.file:
+    path: /var/log/smartctl_exporter
+    state: directory
+    owner: smartctl_exporter
+    group: smartctl_exporter
+    mode: '0755'
+
+# Create smartctl_exporter service file
+- name: Create smartctl_exporter service file
+  ansible.builtin.template:
+    src: smartctl_exporter.service.j2
+    dest: /etc/systemd/system/smartctl_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  register: smartctl_exporter_service_config
+
+# Create smartctl_exporter socket file
+- name: Create smartctl_exporter socket file
+  ansible.builtin.template:
+    src: smartctl_exporter.socket.j2
+    dest: /etc/systemd/system/smartctl_exporter.socket
+    owner: root
+    group: root
+    mode: '0644'
+  register: smartctl_exporter_socket_config
+
+# Create smartctl_exporter config file
+- name: Create smartctl_exporter config file
+  ansible.builtin.template:
+    src: smartctl_exporter.config.j2
+    dest: /etc/smartctl_exporter
+    owner: smartctl_exporter
+    mode: '0644'
+  register: smartctl_exporter_config
+
+# Install smart_metrics requirements
+- name: Install smart_metrics requirements
+  ansible.builtin.apt:
+    name:
+      - smartmontools
+      - moreutils
+    state: present
+    install_recommends: true
+  when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Debian"
+
+# Reload systemd daemon
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+# Start smartctl_exporter socket
+- name: Start smartctl_exporter socket
+  ansible.builtin.systemd:
+    name: smartctl_exporter.socket
+    state: started
+    enabled: true
+  register: smartctl_exporter_socket_start
+
+# Restart smartctl_exporter socket
+- name: Restart smartctl_exporter socket
+  ansible.builtin.systemd:
+    name: smartctl_exporter.socket
+    state: restarted
+    enabled: true
+  when: smartctl_exporter_socket_start is not changed and smartctl_exporter_socket_config is changed
+
+# Start smartctl_exporter service
+- name: Start smartctl_exporter service
+  ansible.builtin.systemd:
+    name: smartctl_exporter
+    state: started
+    enabled: true
+  register: smartctl_exporter_service_start
+
+# Restart smartctl_exporter service
+- name: Restart smartctl_exporter service
+  ansible.builtin.systemd:
+    name: smartctl_exporter.service
+    state: restarted
+    enabled: true
+  when: smartctl_exporter_service_start is not changed and smartctl_exporter_service_config is changed or smartctl_exporter_config is changed
