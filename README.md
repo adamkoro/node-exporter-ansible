@@ -26,7 +26,7 @@ cp inventory-example.yaml inventory.yaml
 ```
 
 #### inventory.yaml variables
-
+`TODO` update
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `ansible_user` | `root` | Username which Ansible will use to connect via SSH |

@@ -8,18 +8,20 @@ all:
     ansible_ssh_private_key_file: "~/.ssh/id_rsa"
     ansible_port: 22
     ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
+
     # Node exporter settings
-    node_exporter_version: 1.7.0
+    node_exporter_version: 1.8.0
     node_exporter_download_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}"
-    # S.M.A.R.T metics settings
-    smart_metrics_enabled: true
-    smart_metrics_download_url: "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts/blob/master/smartmon.sh"
     # NVME metrics settings
     nvme_metrics_enabled: true
-    nvme_metrics_download_url: "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts/blob/master/nvme_metrics.sh"
+    nvme_metrics_download_url: "https://raw.githubusercontent.com/prometheus-community/node-exporter-textfile-collector-scripts/master/nvme_metrics.sh"
     # LVM metrics settings
     lvm_metrics_enabled: true
-    lvm_metrics_download_url: "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts/blob/master/lvm-prom-collector"
+    lvm_metrics_download_url: "https://raw.githubusercontent.com/prometheus-community/node-exporter-textfile-collector-scripts/master/lvm-prom-collector"
     # ZFS metrics settings
     zfs_metrics_enabled: true
-    zfs_metrics_download_url: "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts/blob/master/zfs_zpool.sh"
+    zfs_metrics_download_url: "https://raw.githubusercontent.com/prometheus-community/node-exporter-textfile-collector-scripts/master/zfs_zpool.sh"
+
+    # Smartctl exporter settings
+    smartctl_exporter_version: 0.12.0
+    smartctl_exporter_download_url: "https://github.com/prometheus-community/smartctl_exporter/releases/download/v{{ smartctl_exporter_version }}"
